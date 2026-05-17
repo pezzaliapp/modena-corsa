@@ -169,5 +169,5 @@ ricomincia da zero (sblocca solo L1).
 
 ## Crediti
 
-Programmazione: Alessandro Pezzali · Sviluppato con Claude Code · Font: Bebas
+Programmazione: Alessandro Pezzali · Font: Bebas
 Neue e Saira da Google Fonts.
