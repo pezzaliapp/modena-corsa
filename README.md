@@ -68,18 +68,21 @@ In gara su mobile ci sono **solo 4 controlli** a schermo, fissi:
 
 | Controllo | Posizione | Funzione |
 |---|---|---|
-| **GAS** | basso-destra, 128px | tieni premuto per accelerare |
-| **FRENO** | basso-sinistra, 128px | tieni premuto per frenare; **tieni a fondo in curva → drift** |
+| **GAS** | basso-destra, 96px (semi-trasp.) | tieni premuto per accelerare |
+| **FRENO** | basso-sinistra, 96px (semi-trasp.) | morde forte e imposta la curva; **a fondo in curva → drift** |
 | **ESCI** | alto-destra | conferma e torna alla selezione livello |
-| **CENTRA** | alto-centro | ricalibra lo zero del tilt in qualsiasi momento |
+| **CENTRA** | alto-centro | ricalibra lo zero del tilt (media campioni ~0.9s) |
 
 Lo sterzo è **solo tilt** (asse gamma): nessun pulsante L/R che occupi
-l'area di guida. Risposta analogica con dead-zone di 2°, clamp a 25°.
+l'area di guida. Calibrazione con media trimmed dei campioni (~0.9s),
+dead-zone generosa 3.5°, clamp a 22°, smoothstep dopo la dead-zone — da
+fermo e in piano l'auto NON deriva di lato.
 
-**Drift implicito**: tenendo il freno a fondo in curva ad alta velocità l'auto
-entra in drift automaticamente, carica il boost e — al rilascio del freno —
-spara una breve accelerazione extra. Il pulsante freno si illumina quando
-sei in drift attivo.
+**Freno ≠ rilascio gas**: rilasciando il gas l'auto **rallenta dolcemente**
+(rolling/coasting). Il **FRENO** invece morde forte (~14× più del coasting),
+è il modo per impostare le curve e — tenuto a fondo in curva veloce —
+innesca il **drift implicito** che carica il boost. Al rilascio del freno
+con boost carico, parte uno strappo udibile e visibile.
 
 **Fallback senza sensori**: se l'utente nega il permesso o il dispositivo non
 ha l'accelerometro (in-app browser, alcuni emulatori), la schermata avvisa

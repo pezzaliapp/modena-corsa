@@ -132,12 +132,13 @@
         color:#fff;font-family:'Bebas Neue';letter-spacing:2px;font-size:22px;
         border:2px solid rgba(255,255,255,.45);box-shadow:0 10px 26px rgba(0,0,0,.55);
         user-select:none;-webkit-user-select:none;touch-action:none}
-  #tGas{right:max(22px,env(safe-area-inset-right,0px));bottom:max(28px,env(safe-area-inset-bottom,0px));
-        width:128px;height:128px;border-radius:50%;
-        background:radial-gradient(circle at 35% 30%,#ff7080,var(--rosso-scuro));font-size:24px}
-  #tBrake{left:max(22px,env(safe-area-inset-left,0px));bottom:max(28px,env(safe-area-inset-bottom,0px));
-        width:128px;height:128px;border-radius:50%;
-        background:radial-gradient(circle at 35% 30%,#5a90ff,#1a3a7c);font-size:24px}
+  #tGas{right:max(18px,env(safe-area-inset-right,0px));bottom:max(20px,env(safe-area-inset-bottom,0px));
+        width:96px;height:96px;border-radius:50%;
+        background:radial-gradient(circle at 35% 30%,#ff7080,var(--rosso-scuro));font-size:20px;opacity:.78}
+  #tBrake{left:max(18px,env(safe-area-inset-left,0px));bottom:max(20px,env(safe-area-inset-bottom,0px));
+        width:96px;height:96px;border-radius:50%;
+        background:radial-gradient(circle at 35% 30%,#5a90ff,#1a3a7c);font-size:20px;opacity:.78}
+  .tbtn.active{opacity:1}
   #tStop{position:absolute;pointer-events:auto;
         right:max(14px,env(safe-area-inset-right,0px));top:max(14px,env(safe-area-inset-top,0px));
         min-width:56px;height:56px;padding:0 18px;border-radius:30px;
@@ -180,7 +181,12 @@
   .vig{position:absolute;inset:0;pointer-events:none;
        box-shadow:inset 0 0 220px rgba(10,2,14,.7);mix-blend-mode:multiply;
        transition:box-shadow .25s}
-  body.boosting .vig{box-shadow:inset 0 0 320px rgba(255,140,40,.55)}
+  body.boosting .vig{box-shadow:inset 0 0 420px rgba(255,140,40,.75),inset 0 0 120px rgba(255,220,100,.45);
+       animation:boostPulse .35s ease-out infinite alternate}
+  @keyframes boostPulse{
+    from{filter:none}
+    to{filter:hue-rotate(-6deg) brightness(1.04)}
+  }
 
   /* ---------- Countdown ---------- */
   #cdown{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -204,22 +210,28 @@
     #boostBar{width:160px;height:38px}
   }
 
-  /* ---------- Combo / near-miss UI ---------- */
-  #comboBox{position:absolute;left:50%;top:120px;transform:translateX(-50%);
+  /* ---------- Combo / near-miss UI — BIG e LEGGIBILE ---------- */
+  #comboBox{position:absolute;left:50%;top:30%;transform:translateX(-50%);
         font-family:'Bebas Neue';color:var(--oro-chiaro);text-align:center;
-        opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+        opacity:0;transition:opacity .15s,transform .25s cubic-bezier(.2,1.6,.4,1);
+        pointer-events:none;filter:drop-shadow(0 4px 22px rgba(216,17,42,.45))}
   #comboBox.show{opacity:1}
-  #comboBox .cv{font-size:clamp(32px,6.5vw,52px);line-height:1;
-        text-shadow:0 4px 14px rgba(216,17,42,.6),0 0 20px rgba(244,201,93,.45);letter-spacing:2px}
-  #comboBox .cl{font-size:11px;letter-spacing:5px;color:var(--oro);margin-top:2px;opacity:.9}
+  #comboBox .cv{font-size:clamp(54px,11vw,108px);line-height:.85;
+        text-shadow:0 4px 14px rgba(216,17,42,.7),0 0 28px rgba(244,201,93,.6),0 0 60px rgba(255,150,40,.35);
+        letter-spacing:3px;
+        background:linear-gradient(180deg,#fff,#ffd070 55%,#ff7a36);
+        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  #comboBox .cl{font-size:clamp(11px,1.8vw,14px);letter-spacing:8px;color:var(--oro-chiaro);margin-top:6px;opacity:.95;
+        text-shadow:0 2px 6px rgba(0,0,0,.6);-webkit-text-fill-color:var(--oro-chiaro);background:none}
   #scorePop{position:absolute;pointer-events:none;font-family:'Bebas Neue';
-        font-size:clamp(22px,4vw,32px);color:var(--oro-chiaro);
-        text-shadow:0 2px 8px rgba(0,0,0,.7);
-        animation:popFly .9s ease-out forwards;letter-spacing:2px}
+        font-size:clamp(28px,5vw,44px);color:var(--oro-chiaro);
+        text-shadow:0 2px 10px rgba(0,0,0,.7),0 0 16px rgba(255,180,40,.6);
+        animation:popFly 1.1s ease-out forwards;letter-spacing:3px;z-index:5}
   @keyframes popFly{
-    0%{opacity:0;transform:translateY(20px) scale(.7)}
-    20%{opacity:1;transform:translateY(0) scale(1.1)}
-    100%{opacity:0;transform:translateY(-60px) scale(.9)}
+    0%{opacity:0;transform:translateY(30px) scale(.6) rotate(-3deg)}
+    18%{opacity:1;transform:translateY(0) scale(1.18) rotate(2deg)}
+    38%{transform:translateY(-10px) scale(1) rotate(0)}
+    100%{opacity:0;transform:translateY(-90px) scale(.9)}
   }
 
   /* ---------- Tilt activation screen ---------- */
@@ -347,11 +359,11 @@
       </div>
       <h3 style="margin-top:18px">MOBILE</h3>
       <div class="ctrlGrid">
-        <div><b>Sterzo</b> · Inclinazione del telefono (tilt-only)</div>
-        <div><b>Gas</b> · Pulsante grande basso-destra</div>
-        <div><b>Freno</b> · Pulsante grande basso-sinistra</div>
-        <div><b>Drift</b> · Freno tenuto a fondo in curva</div>
-        <div><b>Centra</b> · Tap "CENTRA" per ricalibrare lo zero</div>
+        <div><b>Sterzo</b> · Tilt (zero calibrato, dead-zone 3.5°)</div>
+        <div><b>Gas</b> · Pulsante basso-destra (rilascio = rolling dolce)</div>
+        <div><b>Freno</b> · Pulsante basso-sinistra (morde, imposta la curva)</div>
+        <div><b>Drift</b> · Freno a fondo in curva → carica BOOST</div>
+        <div><b>Centra</b> · Tap "CENTRA" per ri-calibrare lo zero</div>
         <div><b>Esci</b> · Tap "ESCI" in alto-destra</div>
       </div>
       <p style="margin-top:12px;font-size:12px;color:#cab9a8;line-height:1.6">
@@ -467,16 +479,81 @@ window.addEventListener('resize',resize);
 window.addEventListener('orientationchange',()=>setTimeout(resize,120));
 resize();
 
-/* ============ [2] Costanti ============ */
-const SEG=200;
-const RUMBLE=3;
-const ROADW=2200;
-const LANES=3;
-const CAMH=1100;
-const DRAW=300;
-const FOV=100;
+/* ============ [2] Costanti — TUTTE le manopole di tuning ============ */
+/* Cambia questi numeri qui in alto e ricarica per ri-bilanciare il gioco. */
+
+// ---- Pista / proiezione ----
+const SEG=200;                  // lunghezza segmento
+const RUMBLE=3;                 // alternanza colore asfalto
+const ROADW=2200;               // larghezza strada (world units)
+const LANES=3;                  // corsie
+const CAMH=2200;                // ALTEZZA telecamera (più alto = strada in primo piano, auto piccola)
+const DRAW=300;                 // segmenti renderizzati avanti
+const FOV=78;                   // FOV in gradi (più stretto = meno distorsione, più "telecamera lunga")
 const CAMD=1/Math.tan((FOV/2)*Math.PI/180);
-const CENTRIFUGAL=0.32;
+const CENTRIFUGAL=0.32;         // quanto le curve spingono fuori
+
+// ---- Player car (dimensioni a schermo) ----
+const CAR_W_RATIO=0.16;         // larghezza auto come frazione di W (più piccola = strada più visibile)
+const CAR_W_MAX  =220;          // cap larghezza auto in px
+const CAR_Y_BIAS =0.18;         // 0..1 quanto è in basso fuori-schermo l'auto (0 centro, 1 sotto)
+
+// ---- Sterzo (analogico + tilt) ----
+const STEER_RATE_DOWN=8.0;      // velocità ritorno a zero
+const STEER_RATE_HOLD=6.0;      // velocità raggiungimento input mantenuto
+const TILT_DEADZONE_DEG=3.5;    // dead-zone tilt in gradi (più alta = meno nervoso, no jitter)
+const TILT_MAX_DEG=22;          // tilt utile end-to-end
+const TILT_SMOOTH=0.78;         // 0..1 LP smoothing sul raw tilt (alto = liscio)
+const TILT_CAL_MS=900;          // ms di calibrazione con media campioni
+const TILT_GAIN_MOBILE=1.05;    // gain tilt mobile
+const STEER_SENS_LOW=0.95;      // sensibilità a bassa velocità
+const STEER_SENS_HIGH=0.45;     // sensibilità ad alta velocità
+
+// ---- Guida: accelerazione / frenata / coasting ----
+const CAR_MAX        =320;      // velocità massima nominale
+const CAR_ACCEL      =56;       // accelerazione con gas
+const CAR_COAST_DECEL=10;       // RILASCIO GAS: decelerazione MOLTO dolce (rolling)
+const CAR_BRAKE_DECEL=200;      // FRENO: morde forte, ben distinto dal coasting
+const CAR_BOOST_MULT =1.65;     // accel extra durante boost
+const CAR_BOOST_TOPSP=1.22;     // top-speed extra durante boost
+const GRIP_BASE      =1.00;     // grip base (moltiplicato per lv.grip)
+
+// ---- Off-road: rallenta ma NON intrappola ----
+const OFF_ROAD_X     =0.95;     // soglia |x| oltre la quale sei fuori
+const OFF_ROAD_DECEL =55;       // decel su erba (più dolce di prima)
+const OFF_ROAD_PULL  =0.45;     // forza che ti riporta verso il centro pista
+const OFF_ROAD_TIMEOUT=2.4;     // dopo X secondi fuori → soft-respawn in pista
+const RESPAWN_SPEED_K=0.50;     // mantieni 50% della velocità al respawn
+
+// ---- Drift ----
+const DRIFT_BRAKE_TH =0.75;     // freno minimo per innescare drift
+const DRIFT_STEER_TH =0.18;     // sterzo minimo per innescare drift
+const DRIFT_SPEED_TH =0.30;     // velocità minima (frazione di max) per drift
+const DRIFT_GAIN_DT  =5.0;      // velocità accumulo drift (1/s)
+const DRIFT_DECAY_DT =3.0;      // decay drift quando rilasci
+const DRIFT_SIDE_SLIDE=1.7;     // scivolata laterale durante drift
+const DRIFT_BOOST_GAIN=0.55;    // quanto carica la barra boost al secondo di drift
+const DRIFT_MIN_HOLD =0.45;     // durata minima per "perfect drift"
+
+// ---- Boost ----
+const BOOST_MIN_CHARGE=0.22;    // carica minima per attivarlo al rilascio
+const BOOST_BASE_TIME =0.6;     // secondi base di boost
+const BOOST_EXTRA_TIME=1.6;     // secondi extra in base alla carica
+
+// ---- Combo / near-miss ----
+const COMBO_WINDOW   =3.4;      // secondi finestra di chaining
+const NEAR_MISS_LAT  =0.95;     // |Δx| massimo per near-miss
+const NEAR_MISS_CLOSE=0.55;     // |Δx| minimo per dire "ravvicinato"
+const NEAR_MISS_VMIN =0.50;     // velocità minima per contare (frazione di max)
+const SLOWMO_NEAR    =0.22;     // intensità slow-mo al near-miss
+const SLOWMO_DECAY   =0.55;     // 1/s decay slow-mo
+
+// ---- Camera FX (boost / shake) ----
+const FOVBOOST_GAIN  =0.020;    // zoom contribuito da velocità (PICCOLO: la strada deve restare visibile)
+const KICK_GAIN      =0.015;    // zoom dal kick boost
+const SHAKE_BOOST_K  =0.45;     // shake da boost
+const SHAKE_CRASH_K  =1.10;     // shake da crash
+const SHAKE_OFFROAD_K=0.35;     // shake leggero fuori pista
 
 /* ============ [3] Definizione livelli ============ */
 // time: 0 alba, 0.25 mezzogiorno, 0.55 tramonto, 0.78 sera, 0.95 notte (continuo)
@@ -696,13 +773,28 @@ document.getElementById('tStop').addEventListener('click',e=>{
     }
   }
 });
-// Centra: ricalibrazione tilt
+// Centra: ricalibrazione tilt (media dei campioni nei prossimi TILT_CAL_MS ms)
 document.getElementById('tCenter').addEventListener('click',e=>{
   e.preventDefault();
-  if(Input.tiltSeen){
-    Input.tiltZero=Input.tiltRaw;
+  if(!Input.tiltSeen)return;
+  toast('CALIBRAZIONE…');
+  Input.tiltCalSamples=[];
+  Input.tiltCalibrating=true;
+  setTimeout(()=>{
+    Input.tiltCalibrating=false;
+    const arr=Input.tiltCalSamples;
+    if(arr.length<3){ Input.tiltZero=Input.tiltRaw; }
+    else {
+      arr.sort((a,b)=>a-b);
+      const trim=Math.floor(arr.length*0.10);
+      let sum=0,n=0;
+      for(let i=trim;i<arr.length-trim;i++){sum+=arr[i];n++;}
+      Input.tiltZero = sum/Math.max(1,n);
+    }
+    Input.tiltSmoothRaw = Input.tiltZero;
+    Input.tiltSteer = 0;
     toast('CENTRO RICALIBRATO');
-  }
+  }, TILT_CAL_MS);
 });
 
 window.addEventListener('gamepadconnected',e=>{
@@ -711,18 +803,34 @@ window.addEventListener('gamepadconnected',e=>{
 });
 window.addEventListener('gamepaddisconnected',()=>{Input.gamepad=null;});
 
-// Listener tilt: sempre attivo dopo che è stato concesso il permesso,
-// così sappiamo se gamma arriva o no. Su iOS senza permesso NON emette eventi.
+// Listener tilt: smoothing LP + dead-zone generosa.
+// Lo zero viene preso facendo una MEDIA dei campioni durante la calibrazione,
+// quindi non importa se al tap il telefono trema un attimo.
+Input.tiltSmoothRaw = 0;     // valore raw LP-smoothato
+Input.tiltCalibrating = false;
+Input.tiltCalSamples = [];
 function onTilt(e){
   if(e.gamma==null)return;
   Input.tiltSeen=true;
+  // gamma è inclinazione sx/dx in deg, [-90,90]; in landscape la utile è ±25°
   Input.tiltRaw=e.gamma;
-  // gamma è inclinazione sx/dx in deg, [-90,90].
-  // In landscape la gamma utile è circa ±25°. Riferimento allo zero calibrato.
-  let g=e.gamma - Input.tiltZero;
-  // dead-zone piccola, clamp a ±25°
-  const DZ=2.0, MAX=25;
-  if(Math.abs(g)<DZ)g=0; else g = (g>0?g-DZ:g+DZ);
+  // LP smoothing sul raw: ammazza il jitter ai bordi della dead-zone
+  Input.tiltSmoothRaw = Input.tiltSmoothRaw*TILT_SMOOTH + e.gamma*(1-TILT_SMOOTH);
+  if(Input.tiltCalibrating){
+    Input.tiltCalSamples.push(e.gamma);
+  }
+  // calcola steer dal valore SMOOTH (non dal raw)
+  let g=Input.tiltSmoothRaw - Input.tiltZero;
+  const DZ=TILT_DEADZONE_DEG, MAX=TILT_MAX_DEG;
+  if(Math.abs(g)<DZ){
+    g=0;
+  } else {
+    // dopo la dead-zone, rampa CONTINUA (no salto): rimappa [DZ..MAX] -> [0..1] con curva soft
+    const sign=g>0?1:-1;
+    const norm = (Math.min(MAX, Math.abs(g)) - DZ)/(MAX-DZ); // 0..1
+    const curved = norm*norm*(3-2*norm); // smoothstep — risposta più gentile vicino allo zero
+    g = sign * curved * MAX;
+  }
   g=Math.max(-MAX,Math.min(MAX,g));
   Input.tiltSteer=g/MAX;
 }
@@ -733,16 +841,34 @@ function activateTilt(){
     if(!('DeviceOrientationEvent' in window)){
       Input.tiltDenied=true; resolve({ok:false,reason:'no-sensor'}); return;
     }
+    function startCalibration(ok){
+      // raccogli campioni per TILT_CAL_MS, poi prendi la media come zero
+      Input.tiltCalSamples=[];
+      Input.tiltCalibrating=true;
+      Input.tiltSmoothRaw=0;
+      Input.tiltZero=0;
+      setTimeout(()=>{
+        Input.tiltCalibrating=false;
+        if(!Input.tiltSeen){ resolve({ok:false,reason:'no-events'}); return; }
+        const arr=Input.tiltCalSamples;
+        if(arr.length<3){ Input.tiltZero=Input.tiltRaw; resolve({ok:true,samples:arr.length}); return; }
+        // media TRIMMED (scarto outlier estremi 10%)
+        arr.sort((a,b)=>a-b);
+        const trim=Math.floor(arr.length*0.10);
+        let sum=0,n=0;
+        for(let i=trim;i<arr.length-trim;i++){sum+=arr[i];n++;}
+        Input.tiltZero = sum/Math.max(1,n);
+        // sincronizza smoothRaw col nuovo zero così steerInput nasce a 0
+        Input.tiltSmoothRaw = Input.tiltZero;
+        resolve({ok:true, samples:arr.length, zero:Input.tiltZero});
+      }, TILT_CAL_MS);
+    }
     if(NEEDS_PERM){
       DeviceOrientationEvent.requestPermission().then(r=>{
         if(r==='granted'){
           Input.tiltGranted=true;
           window.addEventListener('deviceorientation', onTilt, true);
-          // Calibra: aspettiamo il primo evento per fissare lo zero
-          setTimeout(()=>{
-            if(Input.tiltSeen){Input.tiltZero=Input.tiltRaw; resolve({ok:true});}
-            else resolve({ok:false,reason:'no-events'});
-          }, 220);
+          startCalibration();
         } else {
           Input.tiltDenied=true;
           resolve({ok:false,reason:'denied'});
@@ -753,10 +879,7 @@ function activateTilt(){
     } else {
       window.addEventListener('deviceorientation', onTilt, true);
       Input.tiltGranted=true;
-      setTimeout(()=>{
-        if(Input.tiltSeen){Input.tiltZero=Input.tiltRaw; resolve({ok:true});}
-        else resolve({ok:false,reason:'no-events'});
-      }, 320);
+      startCalibration();
     }
   });
 }
@@ -782,7 +905,7 @@ function updateInput(dt){
   // Se tilt OK, prendi gamma calibrata. Se negato, fallback alle zone laterali invisibili.
   if(IS_TOUCH){
     if(Input.tiltGranted && Input.tiltSeen){
-      tSteer += Input.tiltSteer*1.15;
+      tSteer += Input.tiltSteer*TILT_GAIN_MOBILE;
     } else if(Input.tiltDenied){
       if(Input.touchTiltL) tSteer -= 1;
       if(Input.touchTiltR) tSteer += 1;
@@ -790,7 +913,6 @@ function updateInput(dt){
     if(Input.touchGas)   tGas   = Math.max(tGas,   1);
     if(Input.touchBrake) tBrake = Math.max(tBrake, 1);
   } else if(Input.tiltGranted && Input.tiltSeen) {
-    // Desktop con tilt? Improbabile ma supportato (laptop con accelerometro).
     tSteer += Input.tiltSteer*0.8;
   }
 
@@ -986,22 +1108,28 @@ const Audio={
   }
 };
 
-// Combo helper: aggiunge punti + popup + audio + score-pop
+// Combo helper: aggiunge punti + popup + audio + score-pop + flash + shake
 function addCombo(n, label, bonus){
   combo += n;
-  comboTimer = 3.2; // finestra di chaining
+  comboTimer = COMBO_WINDOW;
   comboBest = Math.max(comboBest, combo);
-  styleScore += bonus * (1 + (combo-1)*0.20);
-  score += Math.floor(bonus * (1 + (combo-1)*0.20));
+  const mult = 1 + (combo-1)*0.25;
+  const gained = Math.floor(bonus*mult);
+  styleScore += bonus * mult;
+  score += gained;
   const box=document.getElementById('comboBox');
   document.getElementById('comboVal').textContent='x'+combo;
   document.getElementById('comboLbl').textContent=label;
   box.classList.add('show');
-  box.style.transform='translateX(-50%) scale(1.18)';
+  // Pulsazione più grossa: più la combo è alta, più scatta
+  const pulse = 1.20 + Math.min(0.30, combo*0.05);
+  box.style.transform='translateX(-50%) scale('+pulse.toFixed(2)+')';
   requestAnimationFrame(()=>box.style.transform='translateX(-50%) scale(1)');
-  // pop volante
-  spawnScorePop('+'+Math.floor(bonus*(1+(combo-1)*0.20))+'  '+label);
-  Audio.blip(660+combo*40,0.16,0.25);
+  // pop volante + flash + shake leggero per dare peso
+  spawnScorePop('+'+gained+'  '+label);
+  car.flash = Math.max(car.flash, 0.35);
+  shake = Math.max(shake, 0.30);
+  Audio.blip(660+combo*60,0.18,0.30);
 }
 function spawnScorePop(txt){
   const el=document.createElement('div');
@@ -1161,19 +1289,21 @@ function buildTrack(level){
 /* ============ [8] Stato gara + fisica ============ */
 const car={
   z:0, x:0, speed:0,
-  max:300, accel:48, brake:96, decel:24,
-  offRoadDecel:80, steerFactor:0,
-  drift:0,    // 0..1 quanto sta drifting
-  driftHoldT:0, // secondi consecutivi in drift pulito
-  boost:0,    // 0..1 carica boost
-  boostActive:0, // secondi residui di boost
+  max:CAR_MAX, accel:CAR_ACCEL, brake:CAR_BRAKE_DECEL, decel:CAR_COAST_DECEL,
+  offRoadDecel:OFF_ROAD_DECEL, steerFactor:0,
+  drift:0,
+  driftHoldT:0,
+  boost:0,
+  boostActive:0,
   driftDir:0,
   yBob:0,
   suspensionY:0, suspensionTarget:0,
   gear:1, prevGear:1,
   pitch:0,
-  fovBoost:0, // 0..1 contributo FOV per velocità+boost
-  kick:0      // camera kick in boost/accelerazione
+  fovBoost:0,
+  kick:0,
+  offRoadT:0,   // secondi consecutivi fuori pista
+  flash:0       // 0..1 flash bianco per feedback (boost/combo)
 };
 
 let state='title'; // title | levels | controls | countdown | run | paused | done | tilt
@@ -1213,7 +1343,7 @@ function _doStartLevel(idx){
   buildTrack(lv);
   car.x=0;car.speed=0;car.steerFactor=0;car.drift=0;car.boost=0;car.boostActive=0;
   car.yBob=0;car.suspensionY=0;car.suspensionTarget=0;car.gear=1;car.pitch=0;
-  car.fovBoost=0; car.kick=0;
+  car.fovBoost=0; car.kick=0; car.offRoadT=0; car.flash=0;
   position=0; prevPosition=0;
   lap=1; score=0; bestLap=Infinity; crashFlash=0; shake=0; dnf=false;
   raceElapsedAtPause=0;
@@ -1283,18 +1413,16 @@ function updateCar(dt){
   const lv=currentLevel;
   // sanifica dt e variabili sensibili: niente NaN/Infinity nel resto della fisica
   dt=Math.max(0,Math.min(0.05,safeNum(dt,0)));
-  if(!Number.isFinite(car.max)||car.max<=0)car.max=300;
+  if(!Number.isFinite(car.max)||car.max<=0)car.max=CAR_MAX;
   if(!Number.isFinite(car.speed))car.speed=0;
   if(!Number.isFinite(car.x))car.x=0;
   if(!Number.isFinite(car.steerFactor))car.steerFactor=0;
   const sp=Math.max(0,Math.min(2,car.speed/car.max));
 
-  // ---- sterzo ----
+  // ---- sterzo (sens. dipende dalla velocità: agile in basso, stabile in alto) ----
   const steerInput=Input.steer;
-  // sensibilità: maggiore a bassa velocità, minore in alto
-  const steerSens = 0.55 + 0.55*(1-sp);
+  const steerSens = STEER_SENS_HIGH + (STEER_SENS_LOW-STEER_SENS_HIGH)*(1-Math.min(1,sp));
   car.steerFactor += (steerInput - car.steerFactor)*Math.min(1,dt*9);
-  // applica spostamento laterale
   car.x += car.steerFactor * dt * 2.05 * (0.35+sp) * steerSens;
 
   // ---- centrifuga ----
@@ -1302,21 +1430,25 @@ function updateCar(dt){
   car.x -= seg.curve * sp * sp * CENTRIFUGAL * dt * 1.6;
 
   // ---- on-road / off-road ----
-  const onRoad = Math.abs(car.x)<0.95;
-  const gripBase = onRoad ? lv.grip : lv.grip*0.55;
+  const onRoad = Math.abs(car.x)<OFF_ROAD_X;
+  const gas=Input.gas, brk=Input.brake;
 
-  // ---- handbrake / drift ----
+  // ---- DRIFT: FRENO+sterzo è il trigger principale (mobile e desktop).
+  //      Innesca anche con freno-a-mano (Spazio / gamepad A) come "drift puro".
   const handHeld = Input.hand>0.5;
-  if(handHeld && car.speed>car.max*0.30 && Math.abs(car.steerFactor)>0.15){
-    car.drift = Math.min(1, car.drift + dt*4);
+  const brakeDrift = brk>DRIFT_BRAKE_TH && Math.abs(car.steerFactor)>DRIFT_STEER_TH
+                     && car.speed>car.max*DRIFT_SPEED_TH;
+  const driftRequest = handHeld || brakeDrift;
+  if(driftRequest){
+    car.drift = Math.min(1, car.drift + dt*DRIFT_GAIN_DT);
   } else {
-    car.drift = Math.max(0, car.drift - dt*2.4);
+    car.drift = Math.max(0, car.drift - dt*DRIFT_DECAY_DT);
   }
-  // drift effetti: scivola di lato, perde leggermente velocità, accumula boost
   if(car.drift>0.05){
-    car.x += car.steerFactor * dt * 1.6 * car.drift * sp;
-    car.speed -= car.drift * 16 * dt;
-    car.boost = Math.min(1, car.boost + dt*0.42*car.drift);
+    car.x += car.steerFactor * dt * DRIFT_SIDE_SLIDE * car.drift * sp;
+    // il freno-drift NON taglia velocità come prima: solo se si va davvero forte
+    if(sp>0.7) car.speed -= car.drift * 14 * dt;
+    car.boost = Math.min(1, car.boost + dt*DRIFT_BOOST_GAIN*car.drift);
     car.driftDir = car.steerFactor>0?1:-1;
     if(onRoad){
       car.driftHoldT += dt*car.drift;
@@ -1327,53 +1459,78 @@ function updateCar(dt){
         addTireMark( 0.55);
       }
     } else {
-      // drift fuori strada non vale come stile
       car.driftHoldT *= Math.pow(0.4,dt);
     }
     Audio.setSkid(car.drift * Math.min(1,sp*1.4));
   } else {
     Audio.setSkid(0);
-    // chiusura drift: se è stato lungo e in strada, conta come perfect-drift e dà combo
-    if(car.driftHoldT>0.55 && onRoad){
+    if(car.driftHoldT>DRIFT_MIN_HOLD && onRoad){
       perfectDrifts++;
-      const bonus=Math.floor(180 + car.driftHoldT*220);
+      const bonus=Math.floor(220 + car.driftHoldT*260);
       addCombo(1, 'PERFECT DRIFT', bonus);
     }
     car.driftHoldT=0;
-    // rilascio: se hand non premuto e c'era boost, attiva
-    if(!handHeld && car.boost>0.25 && car.boostActive<=0){
-      car.boostActive = 0.5 + car.boost*1.4;
+    // rilascio: se c'era boost caricato, attiva con uno strappo
+    if(!driftRequest && car.boost>BOOST_MIN_CHARGE && car.boostActive<=0){
+      car.boostActive = BOOST_BASE_TIME + car.boost*BOOST_EXTRA_TIME;
       Audio.boostBoom();
-      car.kick = Math.min(1, car.kick + 0.55);
+      car.kick = Math.min(1, car.kick + 0.85);
+      car.flash = Math.max(car.flash, 0.55);
+      shake = Math.max(shake, SHAKE_BOOST_K);
       car.boost=0;
       toastFlash('BOOST!');
-    } else if(!handHeld) {
-      car.boost = Math.max(0, car.boost - dt*0.2);
+    } else if(!driftRequest) {
+      car.boost = Math.max(0, car.boost - dt*0.22);
     }
   }
 
-  // ---- gas / freno ----
-  const gas=Input.gas, brk=Input.brake;
-  let accelEff = car.accel * (1 + (car.boostActive>0?0.6:0));
-  if(gas>0.05) car.speed += accelEff * gas * dt;
-  else if(brk>0.05) car.speed -= car.brake * brk * dt;
-  else car.speed -= car.decel * dt;
+  // ---- gas / freno / coast ----
+  //   - gas tenuto: spinta forte (boost moltiplica)
+  //   - rilascio gas: coasting MOLTO dolce (rolling), perdi pochissima velocità
+  //   - freno: morde forte, ben distinto, e prepara la curva (riduce sp prima della curva)
+  const accelEff = car.accel * (car.boostActive>0?CAR_BOOST_MULT:1);
+  if(gas>0.05) {
+    car.speed += accelEff * gas * dt;
+  } else if(brk>0.05) {
+    // bite freno proporzionale alla velocità (frena più in alto, meno in basso)
+    const biteScale = 0.6 + 0.4*Math.min(1,sp);
+    car.speed -= car.brake * brk * biteScale * dt;
+  } else {
+    // coasting: decel dolcissimo (rolling) — distingue chiaramente dal freno
+    car.speed -= car.decel * dt;
+  }
 
   if(car.boostActive>0) car.boostActive=Math.max(0,car.boostActive-dt);
 
   // pioggia: meno presa
   if(lv.weather==='rain' && car.speed>car.max*0.7){
-    // più facile pattinare in curva
     car.x += seg.curve * 0.002 * dt * sp;
   }
 
-  // off-road decel
-  if(!onRoad && car.speed>car.max*0.5){
-    car.speed -= lv.offRoadDecel*dt;
-    shake=Math.min(1,shake+dt*4);
+  // ---- OFF-ROAD: rallenta + spinge verso il centro + soft-respawn se intrappolato ----
+  if(!onRoad){
+    if(car.speed>car.max*0.25){
+      car.speed -= car.offRoadDecel*dt;
+    }
+    // costante "pull-back" verso il centro pista: l'utente può sempre rientrare
+    const pullSign = car.x>0 ? -1 : 1;
+    car.x += pullSign * OFF_ROAD_PULL * dt;
+    shake = Math.min(1, shake + dt*SHAKE_OFFROAD_K*3);
     spawnDust(Math.sign(car.x)||1, dt);
+    car.offRoadT += dt;
+    // soft-respawn se si è bloccato troppo a lungo (impossibile uscirne)
+    if(car.offRoadT>OFF_ROAD_TIMEOUT){
+      car.x = car.x>0 ? 0.55 : -0.55;     // riposiziona in corsia interna
+      car.speed = Math.max(car.speed*RESPAWN_SPEED_K, car.max*0.25);
+      car.offRoadT=0;
+      shake = Math.max(shake, 0.5);
+      car.flash = Math.max(car.flash, 0.35);
+      toastFlash('RIENTRO!');
+      Audio.blip(520,0.12,0.20);
+    }
   } else {
-    shake*=Math.pow(0.02,dt);
+    car.offRoadT *= Math.pow(0.05, dt); // resetta velocemente quando torni in pista
+    shake *= Math.pow(0.02,dt);
   }
 
   // pioggia: spray dietro le ruote
@@ -1382,8 +1539,10 @@ function updateCar(dt){
     if(Math.random()<dt*40)spawnSpray( 0.5);
   }
 
-  car.speed=Math.max(0,Math.min(car.max*(car.boostActive>0?1.18:1),car.speed));
-  car.x=Math.max(-1.7,Math.min(1.7,car.x));
+  car.speed=Math.max(0,Math.min(car.max*(car.boostActive>0?CAR_BOOST_TOPSP:1),car.speed));
+  car.x=Math.max(-1.85,Math.min(1.85,car.x));
+  // flash decay
+  if(car.flash>0) car.flash = Math.max(0, car.flash - dt*2.2);
 
   // marce simulate
   const tgtGear = Math.min(6, 1 + Math.floor(sp*5.99));
@@ -1392,10 +1551,10 @@ function updateCar(dt){
   car.prevGear=car.gear;
   car.gear = tgtGear;
 
-  // FOV/kick — apre la prospettiva a velocità+boost (effetto tunnel)
+  // FOV/kick — apre la prospettiva a velocità+boost (effetto tunnel, sottile, NON copre la strada)
   const fovTarget = Math.min(1, sp*0.6 + (car.boostActive>0?0.5:0));
   car.fovBoost += (fovTarget - car.fovBoost)*Math.min(1,dt*4);
-  car.kick = Math.max(0, car.kick - dt*1.6);
+  car.kick = Math.max(0, car.kick - dt*1.4);
 
   // pitch dolce (per HUD/sospensioni)
   const slope = (findSeg(position+SEG).p2yv - findSeg(position).p1yv);
@@ -2199,13 +2358,16 @@ function drawTrafficCar(x,y,scale,tc,sky){
     ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 }
 
-/* player car — Maranello red, sospensioni e fari */
+/* player car — Maranello red. Piccola in basso, NON copre la strada. */
 function drawPlayerCar(sky){
   const night=sky.amb<0.4;
-  const cw=Math.min(W*0.30,360), ch=cw*0.5;
+  // Auto ~CAR_W_RATIO della larghezza schermo, cap CAR_W_MAX
+  const cw=Math.min(W*CAR_W_RATIO,CAR_W_MAX), ch=cw*0.5;
   const sk=shake>0.05?(Math.random()-.5)*shake*8:0;
   const cx=W/2 + sk;
-  const cy=H - ch*0.62 + car.suspensionY + Math.sin(car.yBob)*(car.speed>20?1.4:0) + sk*0.4;
+  // L'auto vive nella parte BASSA dello schermo: l'orizzonte e la strada davanti restano liberi.
+  // CAR_Y_BIAS (0..1): 0=centro, 1=quasi fuori. Default 0.18 lascia la strada respirare.
+  const cy=H - ch*(0.30 - CAR_Y_BIAS*0.40) + car.suspensionY + Math.sin(car.yBob)*(car.speed>20?1.4:0) + sk*0.4;
   ctx.save();
   ctx.translate(cx,cy);
   const lean=car.steerFactor*0.18 + (car.drift>0.2?car.driftDir*car.drift*0.12:0);
@@ -2298,30 +2460,52 @@ function drawPlayerCar(sky){
     ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 }
 
-/* speed-line motion blur */
+/* speed-line motion blur — più radial, più persistente */
 function drawMotionBlur(){
   const sp=car.speed/car.max;
-  if(sp<0.55)return;
-  const a=(sp-0.55)*0.6;
+  const boostK = car.boostActive>0?1.0:0;
+  if(sp<0.40 && boostK<=0)return;
+  // alpha cresce con la velocità + boost
+  const a = Math.min(0.55, Math.max(0,(sp-0.40))*0.70 + boostK*0.35);
+  ctx.save();
   ctx.strokeStyle='rgba(255,240,210,'+a+')';
-  ctx.lineWidth=2;
-  for(let i=0;i<18;i++){
-    const ang=Math.random()*Math.PI*2, r=Math.min(W,H)*0.35;
-    const cx=W/2,cy=H*0.62;
+  ctx.lineWidth = 2 + boostK*1.4;
+  const n = 22 + Math.floor(boostK*16);
+  const cx=W/2, cy=H*0.62;
+  const inner = Math.min(W,H)*0.28;
+  const outer = Math.min(W,H)*(0.55 + boostK*0.20);
+  for(let i=0;i<n;i++){
+    const ang=Math.random()*Math.PI*2;
+    const r0 = inner + Math.random()*8;
     ctx.beginPath();
-    ctx.moveTo(cx+Math.cos(ang)*r,cy+Math.sin(ang)*r*0.7);
-    ctx.lineTo(cx+Math.cos(ang)*r*1.6,cy+Math.sin(ang)*r*1.6*0.7);
+    ctx.moveTo(cx+Math.cos(ang)*r0, cy+Math.sin(ang)*r0*0.7);
+    ctx.lineTo(cx+Math.cos(ang)*outer, cy+Math.sin(ang)*outer*0.7);
     ctx.stroke();
   }
+  // streak orizzontali extra durante il BOOST: senso di tunnel
+  if(boostK>0){
+    ctx.strokeStyle='rgba(255,200,90,'+(0.35*boostK)+')';
+    ctx.lineWidth = 2.4;
+    for(let i=0;i<14;i++){
+      const yy = (Math.random()*H*0.7)+H*0.15;
+      const xL = Math.random()*W*0.30;
+      const xR = W - Math.random()*W*0.30;
+      ctx.beginPath();
+      ctx.moveTo(0, yy); ctx.lineTo(xL, yy); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(W, yy); ctx.lineTo(xR, yy); ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 
 function render(){
   const sky=getSky(currentLevel.time, currentLevel.weather);
-  // camera transform: FOV+kick+shake (effetto tunnel quando si va veloce / boost)
-  const zoom = 1 + car.fovBoost*0.06 + car.kick*0.05;
+  // camera transform: zoom MOLTO sottile per non coprire la strada
+  const zoom = 1 + car.fovBoost*FOVBOOST_GAIN + car.kick*KICK_GAIN;
   const sk = shake>0.05?(Math.random()-.5)*shake*6:0;
   const tx = (W*(1-zoom)/2) + sk;
-  const ty = (H*(1-zoom)/2) - car.kick*9 + sk*0.5;
+  const ty = (H*(1-zoom)/2) - car.kick*5 + sk*0.5;
   ctx.setTransform(DPR*zoom,0,0,DPR*zoom, tx*DPR, ty*DPR);
 
   ctx.fillStyle='#0a070d'; ctx.fillRect(0,0,W,H);
@@ -2334,6 +2518,11 @@ function render(){
   // reset transform per overlay full-screen (vignette/flash/grain)
   ctx.setTransform(DPR,0,0,DPR,0,0);
 
+  // boost / combo flash (warm)
+  if(car.flash>0){
+    ctx.fillStyle='rgba(255,200,90,'+car.flash*0.35+')';
+    ctx.fillRect(0,0,W,H);
+  }
   if(crashFlash>0){
     ctx.fillStyle='rgba(255,255,255,'+crashFlash*0.5+')';
     ctx.fillRect(0,0,W,H);
