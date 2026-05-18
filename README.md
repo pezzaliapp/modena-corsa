@@ -51,23 +51,65 @@ avviato e verrai notificato.
 
 ### Mobile / Touch
 
-Su touchscreen compaiono i pulsanti grandi: sterzo L/R, gas, freno, drift, oltre
-al tasto pausa in alto a sinistra.
+Su smartphone l'esperienza è stata ripensata da zero per essere comoda con
+una sola mano per lato, senza ostruire la visuale.
 
-Dalla schermata **Comandi** puoi scegliere fra:
-- **Pulsanti** (default) — sterzo a due pulsanti
-- **Inclina** — sterzo via `deviceorientation` (su iOS verrà richiesto il
-  permesso al primo uso)
+**Tocca per attivare i sensori, poi gioca inclinando.** Quando avvii un
+livello su telefono compare la schermata **"GIOCA INCLINANDO"**:
 
-Lo zoom e lo scroll sono disabilitati per evitare azioni accidentali durante la
-guida.
+1. Tieni il telefono in **orizzontale**, comodo nelle mani come vuoi giocare.
+2. Premi il pulsante grande. Su iPhone iOS richiede in quel momento
+   l'autorizzazione ai sensori — è un gesto utente reale, quindi il prompt
+   compare correttamente.
+3. L'inclinazione attuale viene presa come **zero di calibrazione**: da lì
+   inclini per sterzare.
+
+In gara su mobile ci sono **solo 4 controlli** a schermo, fissi:
+
+| Controllo | Posizione | Funzione |
+|---|---|---|
+| **GAS** | basso-destra, 128px | tieni premuto per accelerare |
+| **FRENO** | basso-sinistra, 128px | tieni premuto per frenare; **tieni a fondo in curva → drift** |
+| **ESCI** | alto-destra | conferma e torna alla selezione livello |
+| **CENTRA** | alto-centro | ricalibra lo zero del tilt in qualsiasi momento |
+
+Lo sterzo è **solo tilt** (asse gamma): nessun pulsante L/R che occupi
+l'area di guida. Risposta analogica con dead-zone di 2°, clamp a 25°.
+
+**Drift implicito**: tenendo il freno a fondo in curva ad alta velocità l'auto
+entra in drift automaticamente, carica il boost e — al rilascio del freno —
+spara una breve accelerazione extra. Il pulsante freno si illumina quando
+sei in drift attivo.
+
+**Fallback senza sensori**: se l'utente nega il permesso o il dispositivo non
+ha l'accelerometro (in-app browser, alcuni emulatori), la schermata avvisa
+chiaramente e si passa automaticamente a **due zone-touch laterali invisibili**
+(metà sinistra/destra dello schermo) come ripiego.
+
+**Orientamento**: il gioco forza il landscape: in portrait compare un overlay
+"Ruota il telefono" — l'esperienza è progettata per il formato orizzontale.
+
+**Requisiti**:
+- iOS 13+ (Safari): serve `https://` per la richiesta sensori — il file
+  aperto via `file://` non riceverà il permesso. Usa GitHub Pages, Netlify,
+  o un server statico locale via `python3 -m http.server`.
+- Android: `https://` è raccomandato; alcuni dispositivi accettano anche
+  `http://` su rete locale.
+- Touch-action e user-select sono disabilitati: nessun pull-to-refresh,
+  doppio-tap-zoom o selezione testo accidentale durante la guida.
 
 ## Drift e boost
 
-Tieni premuto **Spazio** (o A su gamepad / DRIFT su mobile) mentre sei in curva
-a velocità sostenuta. L'auto perde aderenza, lascia segni di gomma e fumo,
-mentre la barra **BOOST DRIFT** si riempie. Quando rilasci il freno a mano con
-boost sufficiente, ottieni una breve accelerazione extra.
+- Tastiera: **Spazio**
+- Gamepad: **A / Cross**
+- Mobile: **FRENO tenuto a fondo in curva** (drift implicito — l'icona si
+  illumina quando è attivo)
+
+Mentre sei in drift l'auto perde aderenza, lascia segni di gomma e fumo, e la
+barra **BOOST DRIFT** si riempie. Al rilascio (o quando finisci la curva) con
+boost sufficiente parte una breve accelerazione extra con kick di camera, boom
+audio e vignettatura calda. Un drift lungo e pulito (in strada) conta come
+**PERFECT DRIFT** e alimenta la combo.
 
 L'aderenza è ridotta fuori strada e sotto la pioggia (livello 5).
 
@@ -88,6 +130,26 @@ Le medaglie sono assegnate sul **tempo totale di gara**:
 - 🥇 ORO — tempo soglia oro
 - 🥈 ARGENTO
 - 🥉 BRONZO
+
+## Sistema combo e rank
+
+Ogni gara è valutata con un **rank S/A/B/C/D**:
+- **S** — oro + alto stile (combo, perfect drift, near miss)
+- **A** — oro a cronometro
+- **B** — argento
+- **C** — bronzo
+- **D** — completato senza medaglia
+
+Lo **stile** si guadagna con:
+- **PERFECT DRIFT** — chiudere un drift lungo e pulito (in strada) — bonus + combo
+- **NEAR MISS** — passare vicinissimo a un'altra auto ad alta velocità —
+  bonus + slow-mo brevissimo + scintille
+- **COMBO** — concatena drift puliti e near miss entro 3.2s: il moltiplicatore
+  sale, il bonus per ogni azione cresce con la combo
+
+La combo si **azzera al crash** o allo scadere del timer. A fine gara la
+schermata risultati ti mostra di quanto hai mancato il rank superiore
+("hai mancato per 0.4s" / "ti serve più stile") per invogliarti a rigiocare.
 
 ## Caratteristiche v2
 
@@ -158,9 +220,15 @@ Tutto in `index.html`. Le sezioni dello script sono commentate:
 ## Browser supportati
 
 - Chrome / Edge / Safari / Firefox recenti
-- Mobile: iOS Safari, Chrome Android
+- Mobile: iOS Safari 13+, Chrome Android — il tilt **richiede HTTPS** per
+  ottenere il permesso sensori su iOS
 - Gamepad: tutti i browser desktop moderni
-- DeviceOrientation: richiede permesso su iOS 13+
+- **In-app browser** (Instagram, Facebook, Telegram, ecc.): possono bloccare
+  l'accesso ai sensori; in quel caso si attiva automaticamente il fallback
+  zone-touch laterali invisibili
+- **Auto-degrader**: se il framerate medio scende sotto 46 fps, il gioco
+  riduce a runtime le particelle e le gocce di pioggia per restare fluido —
+  l'utente vede solo un breve toast "QUALITÀ ↓"
 
 ## Reset progressi
 
