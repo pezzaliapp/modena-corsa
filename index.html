@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#120714">
-<title>MODENA · CORSA — v2</title>
+<!-- CACHE BUSTING: Safari iOS è notorio per cache aggressivo. Questi header
+     dicono al browser di NON cachare l'HTML. La versione corrente è in BUILD_ID. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MODENA · CORSA — v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Saira:wght@400;600;800&display=swap" rel="stylesheet">
@@ -420,26 +425,37 @@
 
   <!-- TILT ACTIVATION SCREEN (mobile, pre-race) -->
   <div class="screen" id="scTilt">
-    <div class="kicker">Pronto a partire</div>
+    <div class="kicker">Pronto a partire · <span id="tiltBuildId" style="opacity:.6"></span></div>
     <div class="tiltArt">📱</div>
     <h2 class="fin" id="tiltLevelName">CIRCUITO</h2>
     <p class="sub" style="margin:8px 0 18px">
       Tieni il telefono in <b>orizzontale</b>, comodo nelle mani.<br>
-      Premi il pulsante e <b>resta fermo 1 secondo</b>: quella diventa lo <b>zero</b>.<br>
-      Poi inclini per sterzare.
+      Premi e <b>resta fermo ~1 s</b>: quella diventa lo <b>zero</b>.
     </p>
     <button class="bigTilt" id="btnTiltStart">GIOCA INCLINANDO</button>
     <div class="tiltStatus" id="tiltStatus"></div>
     <!-- Live tilt preview: barra che mostra in tempo reale dove sta sterzando l'auto -->
-    <div id="tiltPreview" style="margin-top:14px;width:min(420px,80vw);display:none">
-      <div style="font-size:11px;letter-spacing:3px;color:#cab9a8;margin-bottom:6px">VERIFICA: muovi il telefono, la barra deve muoversi</div>
-      <div style="position:relative;height:18px;border:1px solid rgba(244,201,93,.35);border-radius:10px;background:rgba(20,8,24,.4);overflow:hidden">
-        <div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(244,201,93,.6)"></div>
+    <div id="tiltPreview" style="margin-top:14px;width:min(420px,86vw);display:none">
+      <div style="font-size:11px;letter-spacing:3px;color:#cab9a8;margin-bottom:6px">VERIFICA: inclina SX/DX, la barra deve seguire</div>
+      <div style="position:relative;height:22px;border:1px solid rgba(244,201,93,.45);border-radius:11px;background:rgba(20,8,24,.5);overflow:hidden">
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(244,201,93,.7)"></div>
         <div id="tiltPreviewFill" style="position:absolute;left:50%;top:1px;bottom:1px;width:0;background:linear-gradient(90deg,var(--oro),var(--rosso));border-radius:8px;transition:none"></div>
       </div>
-      <div id="tiltPreviewAxis" style="font-size:10px;letter-spacing:2px;color:#8a7a70;margin-top:4px;text-align:right">asse: –</div>
+      <!-- diag completa per debug remoto -->
+      <div id="tiltPreviewDiag" style="font-size:11px;color:#a89888;margin-top:8px;font-family:ui-monospace,Menlo,monospace;line-height:1.5;text-align:left;background:rgba(0,0,0,.25);border-radius:6px;padding:6px 10px"></div>
+      <!-- Toggle: l'utente può FORZARE asse o INVERTIRE se è sbagliato -->
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+        <button class="pill" id="pillAxisAuto">AUTO</button>
+        <button class="pill" id="pillAxisBeta">USA BETA</button>
+        <button class="pill" id="pillAxisGamma">USA GAMMA</button>
+        <button class="pill" id="pillInvert">INVERTI</button>
+      </div>
+      <div style="font-size:10px;color:#8a7a70;margin-top:6px;text-align:center">
+        Inclina a SINISTRA → barra deve andare a SINISTRA. Se è al contrario tocca INVERTI.
+      </div>
     </div>
-    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <button class="btn ghost small" id="btnTiltGoRace" style="display:none">PARTI ORA</button>
       <button class="btn ghost small" id="btnTiltBack">INDIETRO</button>
       <button class="btn ghost small" id="btnTiltNoSensor">SENZA SENSORI</button>
     </div>
@@ -487,6 +503,10 @@ function resize(){
 window.addEventListener('resize',resize);
 window.addEventListener('orientationchange',()=>setTimeout(resize,120));
 resize();
+
+/* Build ID — visibile sulla tilt screen, così sappiamo SEMPRE che versione
+   sta girando sul dispositivo (e diagnosticiamo cache Safari). Cambia ad ogni fix. */
+const BUILD_ID = 'v3.1-' + '20260518-tilt-debug';
 
 /* ============ [2] Costanti — TUTTE le manopole di tuning ============ */
 /* Cambia questi numeri qui in alto e ricarica per ri-bilanciare il gioco. */
@@ -818,28 +838,48 @@ Input.tiltSmoothRaw = 0;     // valore raw LP-smoothato (asse selezionato)
 Input.tiltCalibrating = false;
 Input.tiltCalSamples = [];
 Input.tiltAxisName = '?';    // diag: 'gamma' | 'beta' | '-beta' | '-gamma'
+Input.tiltDiag = {alpha:0, beta:0, gamma:0, ori:0};  // valori GREZZI per debug overlay
+// Override utente: se il default è sbagliato sul suo iPhone, può cambiare
+Input.tiltForceAxis  = localStorage.getItem('mc_tilt_axis')  || 'auto'; // 'auto'|'gamma'|'beta'
+Input.tiltInvert     = localStorage.getItem('mc_tilt_invert')==='1';     // true → flip segno
 
 // In landscape sull'iPhone la rotazione "sterzo" è intorno all'asse del corpo,
 // che equivale a BETA (non gamma). screen.orientation.angle dice come è ruotato
 // il display rispetto al portrait. Mappiamo per ottenere SEMPRE un valore in cui
-// "+" significa "sterza a destra" indipendentemente dall'orientamento.
+// "+" significa "sterza a destra".
+// L'utente può forzare asse e segno via toggle nella schermata calibrazione.
 function tiltAxisValue(e){
-  // alpha/beta/gamma in deg: alpha [0..360), beta [-180..180], gamma [-90..90]
   let angle = 0;
   if(screen.orientation && typeof screen.orientation.angle==='number') angle = screen.orientation.angle;
   else if(typeof window.orientation==='number') angle = window.orientation;
-  // Normalizza in {0, 90, 180, -90}
   if(angle === 270) angle = -90;
   const g = (typeof e.gamma==='number')?e.gamma:0;
   const b = (typeof e.beta ==='number')?e.beta :0;
+  const a = (typeof e.alpha==='number')?e.alpha:0;
+  // popola diagnostica raw (visibile sulla tilt screen + DEBUG)
+  Input.tiltDiag.alpha=a; Input.tiltDiag.beta=b; Input.tiltDiag.gamma=g; Input.tiltDiag.ori=angle;
   let v, axis;
-  if(angle === 90)        { v = -b; axis='-beta'; }    // landscape "right" (home a destra)
-  else if(angle === -90)  { v =  b; axis='beta'; }     // landscape "left"  (home a sinistra)
-  else if(angle === 180)  { v = -g; axis='-gamma'; }
-  else                    { v =  g; axis='gamma'; }    // portrait / default
-  Input.tiltAxisName = axis;
-  // sull'iPhone in landscape capita che gamma sia quasi ±90°; usando beta
-  // lavoriamo sempre nel range comodo ±25°.
+  // OVERRIDE manuale
+  if(Input.tiltForceAxis==='gamma'){ v=g; axis='gamma(force)'; }
+  else if(Input.tiltForceAxis==='beta'){
+    // in landscape vogliamo SEMPRE -beta se angle=90, +beta se angle=-90
+    if(angle===-90) { v=b; axis='beta(force)'; }
+    else            { v=-b; axis='-beta(force)'; }
+  }
+  // AUTO basato su orientation
+  else if(angle === 90)        { v = -b; axis='-beta'; }
+  else if(angle === -90)       { v =  b; axis='beta'; }
+  else if(angle === 180)       { v = -g; axis='-gamma'; }
+  else                         { v =  g; axis='gamma'; }
+  // SAFETY NET: se in "portrait" (angle 0) ma gamma è clampato a ±90°
+  // (segno tipico di rotation lock con device fisicamente in landscape),
+  // passiamo a beta automaticamente.
+  if((angle===0 || angle===180) && Math.abs(g)>70){
+    v = (g>0?-b:b);
+    axis='auto→beta(rotlock)';
+  }
+  if(Input.tiltInvert) v = -v;
+  Input.tiltAxisName = axis + (Input.tiltInvert?' [INV]':'');
   return v;
 }
 
@@ -1416,6 +1456,12 @@ function gotoTilt(){
   document.getElementById('tiltLevelName').textContent=LEVELS[levelIndex].name;
   document.getElementById('tiltStatus').textContent='';
   document.getElementById('tiltStatus').className='tiltStatus';
+  // Mostra il BUILD_ID così sappiamo se Safari sta servendo dalla cache
+  const bid=document.getElementById('tiltBuildId');
+  if(bid) bid.textContent = BUILD_ID;
+  // reset UI
+  document.getElementById('tiltPreview').style.display='none';
+  document.getElementById('btnTiltGoRace').style.display='none';
 }
 function startCountdown(){
   state='countdown';
@@ -3009,31 +3055,52 @@ document.getElementById('pillAudio').addEventListener('click',()=>toggleAudio())
 Audio.on=save.options.audio!==false;
 updateAudioPill();
 
-// Tilt activation screen — bindings
+// Tilt activation screen — bindings (loop persistente: non parte da solo dopo X ms,
+// l'utente preme "PARTI ORA" quando conferma che la barra segue bene).
+let tiltPreviewLoopId = 0;
+function startTiltPreviewLoop(){
+  cancelAnimationFrame(tiltPreviewLoopId);
+  const fill=document.getElementById('tiltPreviewFill');
+  const diag=document.getElementById('tiltPreviewDiag');
+  function tick(){
+    const s=Math.max(-1,Math.min(1,Input.tiltSteer||0));
+    const pct=Math.abs(s)*50;
+    if(s>=0){ fill.style.left='50%'; fill.style.right='auto'; fill.style.width=pct+'%'; }
+    else    { fill.style.right='50%'; fill.style.left='auto'; fill.style.width=pct+'%'; }
+    const d=Input.tiltDiag;
+    diag.innerHTML =
+      'asse usato: <b style="color:#ffe39a">'+Input.tiltAxisName+'</b><br>'+
+      'orientation.angle: <b>'+d.ori+'</b>°<br>'+
+      'alpha: '+d.alpha.toFixed(1)+'°  ·  beta: '+d.beta.toFixed(1)+'°  ·  gamma: '+d.gamma.toFixed(1)+'°<br>'+
+      'zero calibrato: '+Input.tiltZero.toFixed(2)+'  ·  steer out: '+(s>=0?'+':'')+s.toFixed(2);
+    tiltPreviewLoopId = requestAnimationFrame(tick);
+  }
+  tick();
+}
+function stopTiltPreviewLoop(){ cancelAnimationFrame(tiltPreviewLoopId); tiltPreviewLoopId=0; }
+
+function refreshAxisPills(){
+  const a=Input.tiltForceAxis;
+  document.getElementById('pillAxisAuto').classList.toggle('on',a==='auto');
+  document.getElementById('pillAxisBeta').classList.toggle('on',a==='beta');
+  document.getElementById('pillAxisGamma').classList.toggle('on',a==='gamma');
+  document.getElementById('pillInvert').classList.toggle('on',Input.tiltInvert);
+}
+
 document.getElementById('btnTiltStart').addEventListener('click',async ()=>{
   const stEl=document.getElementById('tiltStatus');
   const prv=document.getElementById('tiltPreview');
-  const fill=document.getElementById('tiltPreviewFill');
-  const ax=document.getElementById('tiltPreviewAxis');
+  const goBtn=document.getElementById('btnTiltGoRace');
   stEl.className='tiltStatus';
   stEl.textContent='Tieni fermo… calibrazione 1.2 s';
   const r=await activateTilt();
   if(r.ok){
-    stEl.textContent='Pronto! Muovi per verificare:';
+    stEl.textContent='Calibrato. Verifica che la barra segua il telefono:';
     prv.style.display='block';
-    // anima il preview per 2s, poi parti
-    let t0=performance.now();
-    function tick(){
-      const el=performance.now()-t0;
-      const s=Math.max(-1,Math.min(1,Input.tiltSteer||0));
-      const pct=Math.abs(s)*50;
-      if(s>=0){ fill.style.left='50%'; fill.style.right='auto'; fill.style.width=pct+'%'; }
-      else    { fill.style.right='50%'; fill.style.left='auto'; fill.style.width=pct+'%'; }
-      ax.textContent='asse: '+Input.tiltAxisName+' · steer: '+(s>=0?'+':'')+s.toFixed(2);
-      if(el<1800) requestAnimationFrame(tick);
-      else _doStartLevel(levelIndex);
-    }
-    requestAnimationFrame(tick);
+    goBtn.style.display='inline-block';
+    refreshAxisPills();
+    startTiltPreviewLoop();
+    // NON parte più in automatico: l'utente preme PARTI ORA quando ha verificato.
   } else {
     Input.tiltDenied=true;
     document.body.classList.add('tiltDenied');
@@ -3045,8 +3112,51 @@ document.getElementById('btnTiltStart').addEventListener('click',async ()=>{
     setTimeout(()=>_doStartLevel(levelIndex), 1200);
   }
 });
-document.getElementById('btnTiltBack').addEventListener('click',()=>gotoLevels());
+
+document.getElementById('btnTiltGoRace').addEventListener('click',()=>{
+  stopTiltPreviewLoop();
+  _doStartLevel(levelIndex);
+});
+
+// Toggle pills
+function setForceAxis(v){
+  Input.tiltForceAxis = v;
+  try{ localStorage.setItem('mc_tilt_axis', v); }catch(_){}
+  refreshAxisPills();
+  // ricalibra subito (così zero su asse nuovo)
+  recalibrateTilt();
+}
+function toggleInvert(){
+  Input.tiltInvert = !Input.tiltInvert;
+  try{ localStorage.setItem('mc_tilt_invert', Input.tiltInvert?'1':'0'); }catch(_){}
+  refreshAxisPills();
+}
+function recalibrateTilt(){
+  if(!Input.tiltSeen)return;
+  Input.tiltCalSamples=[];
+  Input.tiltCalibrating=true;
+  setTimeout(()=>{
+    Input.tiltCalibrating=false;
+    const arr=Input.tiltCalSamples;
+    if(arr.length<3){ Input.tiltZero=Input.tiltRaw; }
+    else {
+      arr.sort((a,b)=>a-b);
+      const trim=Math.floor(arr.length*0.10);
+      let sum=0,n=0;
+      for(let i=trim;i<arr.length-trim;i++){sum+=arr[i];n++;}
+      Input.tiltZero = sum/Math.max(1,n);
+    }
+    Input.tiltSmoothRaw = Input.tiltZero;
+    Input.tiltSteer = 0;
+  }, TILT_CAL_MS);
+}
+document.getElementById('pillAxisAuto').addEventListener('click',()=>setForceAxis('auto'));
+document.getElementById('pillAxisBeta').addEventListener('click',()=>setForceAxis('beta'));
+document.getElementById('pillAxisGamma').addEventListener('click',()=>setForceAxis('gamma'));
+document.getElementById('pillInvert').addEventListener('click',toggleInvert);
+document.getElementById('btnTiltBack').addEventListener('click',()=>{ stopTiltPreviewLoop(); gotoLevels(); });
 document.getElementById('btnTiltNoSensor').addEventListener('click',()=>{
+  stopTiltPreviewLoop();
   Input.tiltDenied=true;
   document.body.classList.add('tiltDenied');
   _doStartLevel(levelIndex);
