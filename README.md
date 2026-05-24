@@ -12,7 +12,7 @@ server, niente connessione (le sole risorse esterne sono i Google Fonts, ma il
 gioco funziona anche senza).
 
 Dalla schermata titolo:
-- **Scegli circuito** — selezione dei 5 tracciati con anteprima e medaglie
+- **Scegli circuito** — selezione dei 10 tracciati con anteprima e medaglie
 - **Corsa rapida** — entra nell'ultimo livello sbloccato
 - **Comandi** — riepilogo input e opzioni mobile/audio
 
@@ -128,6 +128,11 @@ successivo. Tempo migliore, medaglie e sblocchi sono salvati in localStorage.
 | 3 | Colline & Vigneti | Tramonto | Foschia | Medio-alto |
 | 4 | Autodromo | Sera blu | Sereno | Tecnico |
 | 5 | Passo Appenninico | Notte | Pioggia | Difficile (tempo limite) |
+| 6 | Rally della Secchia | Alba sul fiume | Foschia | Molto difficile (sterrato, bassa aderenza) |
+| 7 | Nebbia in Via Emilia | Mezzogiorno cieco | Foschia | Molto difficile (tempo limite, traffico veloce) |
+| 8 | Tangenziale Notturna | Notte | Pioggia | Estrema (aderenza minima, traffico denso) |
+| 9 | Salita di Montese | Tramonto | Sereno | Estrema (tornanti in salita, tempo limite duro) |
+| 10 | Circuito delle 24 Ore | Notte fonda | Sereno | Massima (misto, 4 giri, tempo limite, finale) |
 
 Le medaglie sono assegnate sul **tempo totale di gara**:
 - 🥇 ORO — tempo soglia oro
